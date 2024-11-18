@@ -1,0 +1,26 @@
+class DropHeadQueue:
+    def _init_(self, max_queue_size):
+        self.max_queue_size = max_queue_size    # Maximum capacity of the queue
+        self.queue = []                         # Initialize an empty queue
+
+    def add_packet(self, packet):
+        # Check if queue is full
+        if len(self.queue) >= self.max_queue_size:
+            # Remove the packet at the head (front) of the queue
+            dropped_packet = self.queue.pop(0)
+            print(f"Packet {dropped_packet} dropped to make room for new packet.")
+
+        # Add the new packet to the end of the queue
+        self.queue.append(packet)
+        print(f"Packet {packet} added to queue. Current queue length: {len(self.queue)}")
+
+# Get user input for maximum queue size and number of packets
+max_queue_size = int(input("Enter maximum queue size (max_queue_size): "))
+packet_count = int(input("Enter the number of packets to simulate: "))
+
+# Initialize Drop Head queue with user-defined maximum queue size
+drop_head_queue = DropHeadQueue(max_queue_size)
+
+# Simulate packet arrivals
+for i in range(1, packet_count + 1):
+    drop_head_queue.add_packet(f"Packet_{i}")
