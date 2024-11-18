@@ -1,0 +1,51 @@
+import random
+class TCPFlow:
+    def __init__(self, flow_id, initial_cwnd=10):
+        self.flow_id = flow_id
+        self.cwnd = initial_cwnd
+        self.ssthresh = 50  
+        self.packets_sent = 0 
+
+    def send_packets(self):
+        self.packets_sent += self.cwnd
+        print(f"Flow {self.flow_id}: Sent {self.cwnd} packets.")
+
+    def experience_packet_loss(self):
+        self.ssthresh = max(1, self.cwnd // 2) 
+        self.cwnd = max(1, self.cwnd // 2) 
+        print(f"Flow {self.flow_id}: Packet loss detected! Reducing cwnd to {self.cwnd} and ssthresh to {self.ssthresh}.")
+
+    def increase_cwnd(self):
+        if self.cwnd < self.ssthresh:
+            self.cwnd *= 2  
+        else:
+            self.cwnd += 1 
+        print(f"Flow {self.flow_id}: Increased cwnd to {self.cwnd}.")
+
+def main_simulation(num_flows, simulation_steps, packet_loss_chance):
+   
+    flows = [TCPFlow(flow_id=i+1) for i in range(num_flows)]
+
+    for step in range(1, simulation_steps + 1):
+        print(f"\n--- Simulation Step {step} ---")
+
+        for flow in flows:
+            flow.send_packets()
+        if random.random() < packet_loss_chance:
+            print("\nGlobal Congestion Detected! All flows experiencing packet loss.")
+            for flow in flows:
+                flow.experience_packet_loss()
+        else:
+            for flow in flows:
+                flow.increase_cwnd()
+
+    print("\n--- Simulation Complete ---")
+    for flow in flows:
+        print(f"Flow {flow.flow_id}: Final cwnd = {flow.cwnd}, packets sent = {flow.packets_sent}")
+
+if __name__ == "__main__":
+    num_flows = int(input("Enter the number of TCP flows: "))
+    simulation_steps = int(input("Enter the number of simulation steps: "))
+    packet_loss_chance = float(input("Enter the packet loss chance (e.g., 0.2 for 20%): "))
+    
+    main_simulation(num_flows, simulation_steps, packet_loss_chance)
